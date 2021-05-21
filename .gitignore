@@ -1,1 +1,7 @@
 .idea
+
+# images dir or images with png jpg jpeg
+images
+*.png
+*.jpg
+*.jpeg
