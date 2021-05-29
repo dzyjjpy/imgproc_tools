@@ -6,11 +6,12 @@
 
 import os
 import cv2
+import numpy as np
 import argparse
 from tqdm import tqdm
 import logging
 
-logging.basicConfig(format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S', filename=None, level=logging.INFO)
+logging.basicConfig(format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S', filename=None, level=logging.WARN)
 logger = logging.getLogger(__name__)
 
 def get_args():
@@ -24,9 +25,17 @@ def get_args():
 def convert_binary_seg(matting_mask, res_file_path, isSave=True):
     if matting_mask is None:
         print("matting mask is empty")
-    binary_mask = matting_mask.copy()
-    binary_mask[matting_mask < 128] = 0
-    binary_mask[matting_mask >= 128] = 255
+    binary_mask = None
+    n_channel =  (np.atleast_3d(matting_mask)).shape[2]
+    if 1 == n_channel:
+        binary_mask = matting_mask.copy()
+        binary_mask[matting_mask < 128] = 0
+        binary_mask[matting_mask >= 128] = 255
+    elif 3 == n_channel:
+        binary_mask = matting_mask.copy()[:, :, 2] # Red Channel BGR
+        binary_mask[matting_mask[:, :, 2] < 128] = 0
+        binary_mask[matting_mask[:, :, 2] >= 128] = 255
+
     if True == isSave:
         cv2.imwrite(res_file_path, binary_mask)
         logger.info("save binary mask{}".format(res_file_path))
