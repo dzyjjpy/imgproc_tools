@@ -11,7 +11,7 @@ from enum import Enum
 import argparse
 import logging
 
-logging.basicConfig(format=' %(asctime)s - %(message)s ', datefmt='%d-%b-%y %H:%M:%S', filename=None, level=logging.INFO)
+logging.basicConfig(format=' %(asctime)s - %(message)s ', datefmt='%d-%b-%y %H:%M:%S', filename=None, level=logging.WARN)
 logger = logging.getLogger(__name__)
 
 def get_args():
@@ -113,13 +113,13 @@ def main():
     mask_path = args.mask_path
     pallete_path = args.pallete_path
 
-    # # convert matting mask or binary mask to pallete
-    # convert_pallete(mask_path, pallete_path)
-    # logger.warning("convert binary to pallete complete")
+    # convert matting mask or binary mask to pallete
+    convert_pallete(mask_path, pallete_path)
+    logger.warning("convert binary to pallete complete")
 
-    # convert pallete to binary mask
-    convert_binary(pallete_path, mask_path)
-    logger.warning("convert pallete to binary complete")
+    # # convert pallete to binary mask
+    # convert_binary(pallete_path, mask_path)
+    # logger.warning("convert pallete to binary complete")
 
 
 if __name__ == "__main__":
