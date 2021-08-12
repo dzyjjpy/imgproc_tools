@@ -1,7 +1,7 @@
 .idea
 
 # images dir or images with png jpg jpeg
-images
+images/
 *.png
 *.jpg
 *.jpeg
