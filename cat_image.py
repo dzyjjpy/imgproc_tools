@@ -43,6 +43,7 @@ def cat_image(image_old_path, image_new_path, save_path, cat_dir="h", name_suffi
 	for file in tqdm(files):
 		logger.info("----processing {} ".format(file))
 		image_old = cv2.imread(os.path.join(image_old_path, file))
+		assert 1 == file.count("."), "----pls check, file name has multiple dot----"
 		image_new = cv2.imread(os.path.join(image_new_path, file.split(".")[0] + name_suffix))
 
 		text_remark_old = image_old_path.split("\\")[-1]  #"Ground Truth"
