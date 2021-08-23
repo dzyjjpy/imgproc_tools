@@ -19,6 +19,14 @@ def get_args():
     print(args)
     return args
 
+def add_cls_gt_label(file_name, train_txt):
+    class_names = ['_palm_', '_ok_', '_L_', '_V_', '_rock_', '_other_']
+    for i, class_name in enumerate(class_names):
+        if class_name in file_name:
+            train_txt.write(" " + str(i))
+    if "_fist_" in file_name:
+        train_txt.write(" " + str(5))
+
 def write_file_names(img_path, txt_path, no_suffix=False):
     """
     :param img_path: directory folder, e.g. res_img/
@@ -30,9 +38,13 @@ def write_file_names(img_path, txt_path, no_suffix=False):
 
     for file in tqdm(files):
         if True == no_suffix:
-            train_txt.write(file.split(".")[0] + "\n")  # prefix name
+            train_txt.write(file.split(".")[0])  # prefix name
         else:
-            train_txt.write(file + "\n") # full name
+            train_txt.write(file) # full name
+        add_cls = False
+        if add_cls == True:
+            add_cls_gt_label(file, train_txt)
+        train_txt.write("\n")
 
 if __name__ == "__main__":
     args = get_args()
