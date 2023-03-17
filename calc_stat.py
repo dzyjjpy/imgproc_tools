@@ -34,7 +34,11 @@ def compute(path):
         file_path = os.path.join(path, file_name)
         assert os.path.exists(file_path), "file path {} not exist".format(file_path)
         img = cv2.imread(file_path, 1)
-        logger.info("img.shape {} ".format(img.shape))
+        # logger.info("img.shape {} ".format(img.shape))
+        if img is not None:
+            continue
+        else:
+            logger.info("img {} ".format(file_path))
 
         img_width = img.shape[1]
         img_height = img.shape[0]

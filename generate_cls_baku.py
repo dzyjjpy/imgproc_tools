@@ -20,12 +20,11 @@ def get_args():
     return args
 
 def add_cls_gt_label(file_name, train_txt):
-    class_names = ['_palm_', '_ok_', '_L_', '_V_', '_rock_', '_other_']
+    # class_names = ['_palm_', '_ok_', '_L_', '_V_', '_rock_', '_other_']
+    class_names = ['_baby_', '_adult_', '_kids_', '_unknow_']
     for i, class_name in enumerate(class_names):
         if class_name in file_name:
             train_txt.write(" " + str(i))
-    if "_fist_" in file_name:
-        train_txt.write(" " + str(5))
 
 def write_file_names(img_path, txt_path, no_suffix=False):
     """
@@ -40,12 +39,31 @@ def write_file_names(img_path, txt_path, no_suffix=False):
         if True == no_suffix:
             train_txt.write(file.split(".")[0])  # prefix name
         else:
-            train_txt.write(file) # full name
-        # add_cls = True
-        # if add_cls == True:
-        #     add_cls_gt_label(file, train_txt)
-        train_txt.write(" " + str(0))
+            train_txt.write("3/"+file) # full name
+        add_cls = True
+        if add_cls == True:
+            add_cls_gt_label(file, train_txt)
+        # train_txt.write(" " + str(0))
         train_txt.write("\n")
+
+def write_baku(root_path, txt_path):
+    assert os.path.exists(root_path), "-----root_path not exist-----"
+
+    train_txt = open(txt_path, "w")
+
+    subdirs = os.listdir(root_path)
+    for subdir in subdirs:
+        subdir_path = os.path.join(root_path, subdir)
+        if os.path.isdir(subdir_path):
+            files = os.listdir(subdir_path)
+            for file in files:
+                file_path = os.path.join(subdir_path, file)
+                train_txt.write(os.path.join(subdir, file))
+                train_txt.write(" " + str(subdir))
+                train_txt.write("\n")
+
+
+
 
 if __name__ == "__main__":
     args = get_args()
@@ -53,5 +71,6 @@ if __name__ == "__main__":
     txt_path = args.txt_path
     no_suffix_bool = args.no_suffix # remove file name's suffix or not
 
-    write_file_names(img_path, txt_path, no_suffix_bool)
+    # write_file_names(img_path, txt_path, no_suffix_bool)
 
+    write_baku(img_path, txt_path)

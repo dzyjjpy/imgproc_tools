@@ -7,6 +7,7 @@ import os
 import cv2
 import shutil
 from tqdm import tqdm
+import numpy as np
 import argparse
 
 
@@ -14,8 +15,8 @@ def get_args():
     parser = argparse.ArgumentParser(description="Convert matting mask to binary mask")
     parser.add_argument('--img_path', type=str, required=True, help="image path")
     parser.add_argument('--ann_path', type=str, required=True, help="annotation path")
-    parser.add_argument('--res_path', type=str, required=True, help="result path")
-    parser.add_argument('--xml_path', type=str, required=True, help="xml path")
+    # parser.add_argument('--res_path', type=str, required=True, help="result path")
+    # parser.add_argument('--xml_path', type=str, required=True, help="xml path")
     args = parser.parse_args()
     print(args)
     return args
@@ -109,22 +110,35 @@ def write_xml_context(xml_file, labels, x1, y1, x2, y2):
     xml_file.write('        </bndbox>\n')
     xml_file.write('    </object>\n')
 
+def cv_imread(file_path):
+    cv_img = cv2.imdecode(np.fromfile(file_path, dtype=np.uint8), -1)
+    return cv_img
+
 if __name__ == "__main__":
     args = get_args()
-    img_path = args.img_path
+
+    # dir mode process
+    img_dir = args.img_path
     ann_path = args.ann_path
-    res_path = args.res_path
-    xml_path  = args.xml_path
-    if not os.path.exists(res_path):
-        os.mkdir(res_path)
-    if not os.path.exists(xml_path):
-        os.mkdir(xml_path)
+    # res_path = args.res_path
+    # xml_path  = args.xml_path
+    # if not os.path.exists(res_path):
+    #     os.mkdir(res_path)
+    # if not os.path.exists(xml_path):
+    #     os.mkdir(xml_path)
 
 
     files = os.listdir(ann_path)
     for file in files:
+        img_path = os.path.join(img_dir, file.split(".json")[0])
+        res_path = img_path + "_res"
+        xml_path = img_path + "_xml"
+        if not os.path.exists(res_path):
+            os.makedirs(res_path)
+        if not os.path.exists(xml_path):
+            os.makedirs(xml_path)
         ann_file_path = os.path.join(ann_path, file)
-        with open(ann_file_path, "r") as load_file:
+        with open(ann_file_path, "r", encoding="utf-8") as load_file:
             load_dict = json.load(load_file)
             info_dict = load_dict["info"]
             images_dict = load_dict["images"]
@@ -145,7 +159,8 @@ if __name__ == "__main__":
                     image_file_path = os.path.join(img_path, image_name)
                     if not os.path.exists(image_file_path):
                         print("--------img file path", image_file_path)
-                    img = cv2.imread(image_file_path)
+                    # img = cv2.imread(image_file_path)
+                    img = cv_imread(image_file_path)
                     if img is None:
                         print("--------img file path", image_file_path)
                         continue
@@ -189,6 +204,7 @@ if __name__ == "__main__":
                                     # label parsing
                                     res_file_path = os.path.join(res_path, file_name)
                                     # cv2.imwrite(res_file_path, img_crop)
+                                    cv2.imencode('.jpg', img_crop)[1].tofile(res_file_path)
                                     write_xml_context(xml_file, "hand", x0_refine, y0_refine, x1_refine, y1_refine)
                                     write_bbox = True
                     xml_file.write("</annotation>")
@@ -198,7 +214,8 @@ if __name__ == "__main__":
 
                     # crop head expand with no hand
                     if True == is_no_hand:
-                        cv2.imwrite("tools/no_hand/"+file_name, img_crop)
+                        # cv2.imwrite("tools/no_hand/"+file_name, img_crop)
+                        cv2.imencode('.jpg', img_crop)[1].tofile("tools/no_hand/"+file_name)
 
                     #
                     # bbox_num = bbox_num + 1

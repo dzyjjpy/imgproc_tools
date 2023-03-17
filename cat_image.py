@@ -7,7 +7,7 @@
 #         python cat_image.py --src_dir /media/sdc/jiapy/experiments/img_dir/res_deeplabv3plus/  \
 #					--dst_dir /media/sdc/jiapy/experiments/img_dir/res_hrnet/          \
 #					--res_dir /media/sdc/jiapy/experiments/img_dir/deeplabv3plus_hrnet48_comp/  \
-
+# -*- coding: utf-8 -*-
 import os
 import cv2
 import argparse
@@ -42,14 +42,18 @@ def cat_image(image_old_path, image_new_path, save_path, cat_dir="h", name_suffi
 
 	for file in tqdm(files):
 		logger.info("----processing {} ".format(file))
+		print(file)
 		image_old = cv2.imread(os.path.join(image_old_path, file))
 		assert 1 == file.count("."), "----pls check, file name has multiple dot----"
 		image_new = cv2.imread(os.path.join(image_new_path, file.split(".")[0] + name_suffix))
+		if image_new is None:
+			continue
+		image_new = cv2.resize(image_new, (224, 224))
 
 		text_remark_old = image_old_path.split("\\")[-1]  #"Ground Truth"
 		text_remark_new = image_new_path.split("\\")[-1]  #"Prediction"
-		cv2.putText(image_old, text_remark_old, (5, 50), cv2.FONT_HERSHEY_COMPLEX, 0.75, (0, 0, 255), 2)
-		cv2.putText(image_new, text_remark_new, (5, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
+		cv2.putText(image_old, text_remark_old, (5, 20), cv2.FONT_HERSHEY_COMPLEX, 0.75, (0, 0, 255), 2)
+		cv2.putText(image_new, text_remark_new, (5, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
 
 		save_file_path = os.path.join(save_path, file)
 		if "h" == cat_dir:
